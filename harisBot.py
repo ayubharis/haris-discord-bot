@@ -2,14 +2,14 @@ import discord
 import requests
 import cassiopeia
 import json
-TOKEN = 'NjI5MDI4OTM3MTU0MDM1NzI1.XZT3yg.t1-E53ZYdOq6IpGiKO2S_LUXuy8'
+import spotipy
+from apikeys import *
 
 client = discord.Client()
-
+auth = spotipy.oauth2.SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
+spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
-apk = "?api_key=RGAPI-c210fd93-8d11-4311-93ea-30ec0b9e5e43" #put your api key here
-
-cassiopeia.set_riot_api_key("RGAPI-c210fd93-8d11-4311-93ea-30ec0b9e5e43")  # This overrides the value set in your configuration/settings.
+cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
 
 
@@ -43,4 +43,25 @@ async def on_message(message):
                 elif i < len(level7) - 2:
                     s+= ", "
             await message.channel.send(summoner.name + " is Mastery 7 on: " + s)
+    elif message.content.startswith('~react'):
+        emojis = client.emojis
+        eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
+        'F' : '🇫', 'G' : '🇬', 'H' : '🇭', 'I' : '🇮', 'J' : '🇯', 'K' : '🇰', 
+        'L' : '🇱', 'M' : '🇲', 'N' : '🇳', 'O' : '🇴', 'P' : '🇵', 'Q' : '🇶', 
+        'R' : '🇷', 'S' : '🇸', 'T' : '🇹', 'U' : '🇺', 'V' : '🇻', 'W' : '🇼',
+        'x' : '🇽', 'Y' : '🇾', 'Z' : '🇿'}
+        xs =  message.content.upper().split(' ')
+        if len(xs) != 2:
+            await message.channel.send('Improper syntax!')
+        else:
+            msg = await message.channel.history(limit=2).flatten()
+            for c in xs[1]:
+                await msg[1].add_reaction(eDict[c])
+    elif message.content.startswith('~spotify'):
+        xs = message.content
+        results = (spotify.search(q=xs[9:], limit=1, type="track"))
+        for idx, track in enumerate(results['tracks']['items']):
+            await message.channel.send(track['external_urls']['spotify'])
+    elif message.content.startswith('~w2g'):
+        await message.channel.send("https://www.watch2gether.com/rooms/4gsijtdvlmrererx8b?lang=en")
 client.run(TOKEN)
