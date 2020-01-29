@@ -29,10 +29,21 @@ async def on_message(message):
         if len(xs) < 2:
             await message.channel.send('Improper syntax!')
         if (xs[1] == "level"):
-            summoner = cassiopeia.get_summoner(name=xs[2])
-            await message.channel.send(summoner.name + " is level " + str(summoner.level))
+            summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
+            name = cassiopeia.get_summoner(account_id=summoner.account_id).name
+            opgg = "https://na.op.gg/summoner/userName="
+            icon = summoner.profile_icon.url
+            rsf = cassiopeia.Queue.ranked_solo_fives
+            rank = (str(summoner.ranks[rsf].tier) + " " + str(summoner.ranks[rsf].division)) if rsf in summoner.ranks else 'Unranked'
+            embedded = discord.Embed(title=rank,
+            description=f'Level {summoner.level}', color=discord.Colour.blue())
+            embedded.set_author(name=name)
+            embedded.set_image(url=icon)
+            await message.channel.send(embed=embedded)
+        
         elif (xs[1] == "mastery"):
-            summoner = cassiopeia.get_summoner(name=xs[2])
+            summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
+            name = cassiopeia.get_summoner(account_id=summoner.account_id).name
             level7 = summoner.champion_masteries.filter(lambda x: x.level == 7)
             level7 = [m.champion.name for m in level7]
             s = ""
@@ -42,7 +53,9 @@ async def on_message(message):
                     s+= " and "
                 elif i < len(level7) - 2:
                     s+= ", "
-            await message.channel.send(summoner.name + " is Mastery 7 on: " + s)
+            await message.channel.send(name + " is Mastery 7 on: " + s)
+    
+    
     elif message.content.startswith('~react'):
         emojis = client.emojis
         eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
@@ -55,13 +68,20 @@ async def on_message(message):
             await message.channel.send('Improper syntax!')
         else:
             msg = await message.channel.history(limit=2).flatten()
+            #await delete(xs[1])
             for c in xs[1]:
                 await msg[1].add_reaction(eDict[c])
+    
+    
     elif message.content.startswith('~spotify'):
         xs = message.content
         results = (spotify.search(q=xs[9:], limit=1, type="track"))
         for idx, track in enumerate(results['tracks']['items']):
             await message.channel.send(track['external_urls']['spotify'])
+    
+    
     elif message.content.startswith('~w2g'):
         await message.channel.send("https://www.watch2gether.com/rooms/4gsijtdvlmrererx8b?lang=en")
+
+
 client.run(TOKEN)
