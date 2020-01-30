@@ -38,7 +38,7 @@ async def on_message(message):
             embedded = discord.Embed(title=rank,
             description=f'Level {summoner.level}', color=discord.Colour.blue())
             embedded.set_author(name=name)
-            embedded.set_image(url=icon)
+            embedded.set_thumbnail(url=icon)
             await message.channel.send(embed=embedded)
         
         elif (xs[1] == "mastery"):
