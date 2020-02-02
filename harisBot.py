@@ -68,7 +68,7 @@ async def on_message(message):
                 embedded.set_thumbnail(url=champ.image.url)
                 for skill in champ.spells:
                     s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
-                    embedded.add_field(name=f'{skill.keyboard_key.name} : {skill.name}',value=f'{skill.description} {s}')
+                    embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{skill.description.replace('<br>','\n')} {s}')
                 embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description)
                 await message.channel.send(embed=embedded)
     elif message.content.startswith('~react'):
