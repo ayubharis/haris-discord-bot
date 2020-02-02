@@ -56,7 +56,7 @@ async def on_message(message):
         elif (xs[1] == "skills"):
             found = False
             for chmp in champs:
-                if chmp.name.lower() == ''.join([str(x) for x in xs[2:]]).lower():
+                if or chmp.name.lower() == ' '.join([str(x) for x in xs[2:]]).lower():
                     champ = chmp
                     found = True
                     break
