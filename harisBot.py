@@ -11,7 +11,7 @@ spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
 cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
-
+champs = cassiopeia.get_champions()
 
 @client.event
 async def on_ready():
@@ -40,7 +40,6 @@ async def on_message(message):
             embedded.set_author(name=name)
             embedded.set_thumbnail(url=icon)
             await message.channel.send(embed=embedded)
-        
         elif (xs[1] == "mastery"):
             summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
             name = cassiopeia.get_summoner(account_id=summoner.account_id).name
@@ -54,8 +53,22 @@ async def on_message(message):
                 elif i < len(level7) - 2:
                     s+= ", "
             await message.channel.send(name + " is Mastery 7 on: " + s)
-    
-    
+        elif (xs[1] == "skills"):
+            found = False
+            for chmp in champs:
+                if chmp.name == xs[2]:
+                    champ = chmp
+                    found = True
+                    break
+            if not found:
+                await message.channel.send("Couldn't find a champion with that name")
+            else:
+                embedded = discord.Embed(title=champ.name,
+                description=champ.blurb, color=discord.Colour.red())
+                embedded.set_thumbnail(champ.image.url)
+                for skill in champ.spells:
+                    embedded.add_field(name=skill.name,value=skill.description)
+                await message.channel.send(embed=embedded)
     elif message.content.startswith('~react'):
         emojis = client.emojis
         eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
@@ -68,7 +81,6 @@ async def on_message(message):
             await message.channel.send('Improper syntax!')
         else:
             msg = await message.channel.history(limit=2).flatten()
-            #await delete(xs[1])
             for c in xs[1]:
                 await msg[1].add_reaction(eDict[c])
     
