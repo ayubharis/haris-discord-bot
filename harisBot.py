@@ -56,7 +56,7 @@ async def on_message(message):
         elif (xs[1] == "skills"):
             found = False
             for chmp in champs:
-                if chmp.name == xs[2]:
+                if chmp.name.lower() == ''.join([str(x) for x in xs[2:]]).lower():
                     champ = chmp
                     found = True
                     break
@@ -64,10 +64,12 @@ async def on_message(message):
                 await message.channel.send("Couldn't find a champion with that name")
             else:
                 embedded = discord.Embed(title=champ.name,
-                description=champ.blurb, color=discord.Colour.red())
-                embedded.set_thumbnail(champ.image.url)
+                description=champ.title, color=discord.Colour.red())
+                embedded.set_thumbnail(url=champ.image.url)
                 for skill in champ.spells:
-                    embedded.add_field(name=skill.name,value=skill.description)
+                    s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
+                    embedded.add_field(name=f'{skill.keyboard_key.name} : {skill.name}',value=f'{skill.description} {s}')
+                embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description)
                 await message.channel.send(embed=embedded)
     elif message.content.startswith('~react'):
         emojis = client.emojis
