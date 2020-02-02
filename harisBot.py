@@ -70,7 +70,7 @@ async def on_message(message):
                     s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
                     fixedText = skill.description.replace('<br>','\n')
                     embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{fixedText} {s}')
-                embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description)
+                embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description.replace('<br>','\n'))
                 await message.channel.send(embed=embedded)
     elif message.content.startswith('~react'):
         emojis = client.emojis
