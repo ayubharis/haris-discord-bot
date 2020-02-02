@@ -56,7 +56,7 @@ async def on_message(message):
         elif (xs[1] == "skills"):
             found = False
             for chmp in champs:
-                if or chmp.name.lower() == ' '.join([str(x) for x in xs[2:]]).lower():
+                if chmp.name.lower() == ' '.join([str(x) for x in xs[2:]]).lower():
                     champ = chmp
                     found = True
                     break
@@ -68,7 +68,8 @@ async def on_message(message):
                 embedded.set_thumbnail(url=champ.image.url)
                 for skill in champ.spells:
                     s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
-                    embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{skill.description.replace('<br>','\n')} {s}')
+                    fixedText = skill.description.replace('<br>','\n')
+                    embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{fixedText} {s}')
                 embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description)
                 await message.channel.send(embed=embedded)
     elif message.content.startswith('~react'):
