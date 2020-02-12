@@ -3,6 +3,9 @@ import requests
 import cassiopeia
 import json
 import spotipy
+import re
+import datetime
+import arrow
 from apikeys import *
 
 client = discord.Client()
@@ -68,10 +71,26 @@ async def on_message(message):
                 embedded.set_thumbnail(url=champ.image.url)
                 for skill in champ.spells:
                     s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
-                    fixedText = skill.description.replace('<br>','\n')
+                    fixedText = skill.description.re.sub('<*>','\n')
                     embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{fixedText} {s}')
                 embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description.replace('<br>','\n'))
                 await message.channel.send(embed=embedded)
+        elif (xs[1] == "nicelife"):
+            summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
+            name = cassiopeia.get_summoner(account_id=summoner.account_id).name
+            time = datetime.timedelta()
+            rn = arrow.Arrow.utcnow()
+            for match in summoner.match_history(begin_time=rn.shift(days=-1), end_time=rn):
+                time += match.duration
+                print(match.duration)
+            secs = time.total_seconds()
+            print(secs)
+            secs, mins = secs%60, secs//60
+            mins, hours = mins%60, mins//60
+            await message.channel.send(f'{name} did work for {int(hours)} hours, {int(mins)} minutes and {int(secs)} seconds yesterday')
+        elif (xs[1] == "livegame"):
+            summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
+            name = cassiopeia.get_summoner(account_id=summoner.account_id).name
     elif message.content.startswith('~react'):
         emojis = client.emojis
         eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
@@ -97,6 +116,7 @@ async def on_message(message):
     
     elif message.content.startswith('~w2g'):
         await message.channel.send("https://www.watch2gether.com/rooms/4gsijtdvlmrererx8b?lang=en")
-
+    if message.content.endswith('-d'):
+        await message.delete()
 
 client.run(TOKEN)
