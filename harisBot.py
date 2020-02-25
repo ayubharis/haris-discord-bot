@@ -71,9 +71,10 @@ async def on_message(message):
                 embedded.set_thumbnail(url=champ.image.url)
                 for skill in champ.spells:
                     s = "\n\nCooldowns: "+("/").join([str(x) for x in skill.cooldowns])
-                    fixedText = skill.description.re.sub('<*>','\n')
+                    fixedText = re.sub(r'<br>','\n', skill.description)
+                    fixedText = re.sub(r'<.*?>','', skill.description)
                     embedded.add_field(name=f'{skill.keyboard_key.name}: {skill.name}',value=f'{fixedText} {s}')
-                embedded.add_field(name='Passive: '+champ.passive.name,value=champ.passive.description.replace('<br>','\n'))
+                embedded.add_field(name='Passive: '+champ.passive.name,value=re.sub(r'<.*?>','',champ.passive.description))
                 await message.channel.send(embed=embedded)
         elif (xs[1] == "nicelife"):
             summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
