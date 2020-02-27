@@ -14,7 +14,7 @@ spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
 cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
-champs = cassiopeia.get_champions()
+#champs = cassiopeia.get_champions()
 
 @client.event
 async def on_ready():
@@ -42,13 +42,23 @@ async def on_message(message):
         if (xs[1] == "level"):
             summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
             name = cassiopeia.get_summoner(account_id=summoner.account_id).name
-            opgg = "https://na.op.gg/summoner/userName="
+            opgg = f'https://na.op.gg/summoner/userName={name.replace(" ", "%20")}'
             icon = summoner.profile_icon.url
             rsf = cassiopeia.Queue.ranked_solo_fives
-            rank = (str(summoner.ranks[rsf].tier) + " " + str(summoner.ranks[rsf].division)) if rsf in summoner.ranks else 'Unranked'
+            clrD = {'iron' : discord.Colour.from_rgb(88, 92, 80),
+                   'bronze' : discord.Colour.from_rgb(139,69,19),
+                   'silver' : discord.Colour.from_rgb(255,255,255),
+                   'gold' : discord.Colour.gold(),
+                   'platinum' : discord.Color.from_rgb(0, 163, 204),
+                   'diamond' : discord.Color.from_rgb(153, 235, 255),
+                   'master' : discord.Color.red(),
+                   'grandmaster' : discord.Color.dark_red(),
+                   'challenger' : discord.Color.from_rgb(0,0,0)}
+            rank = str(summoner.ranks[rsf].tier) + " " + str(summoner.ranks[rsf].division) if rsf in summoner.ranks else 'Unranked'
+            clr = clrD[summoner.ranks[rsf].tier.name] if rank != 'Unranked' else discord.Color.blurple()
             embedded = discord.Embed(title=rank,
-            description=f'Level {summoner.level}', color=discord.Colour.blue())
-            embedded.set_author(name=name)
+            description=f'Level {summoner.level}', color=clr)
+            embedded.set_author(name=name,url=opgg)
             embedded.set_thumbnail(url=icon)
             await message.channel.send(embed=embedded)
         elif (xs[1] == "mastery"):
@@ -115,14 +125,14 @@ async def on_message(message):
             for c in xs[1]:
                 await msg[1].add_reaction(eDict[c])
     
-    
+
     elif message.content.startswith('~spotify'):
         xs = message.content
         results = (spotify.search(q=xs[9:], limit=1, type="track"))
         for idx, track in enumerate(results['tracks']['items']):
             await message.channel.send(track['external_urls']['spotify'])
     
-    
+
     elif message.content.startswith('~w2g'):
         await message.channel.send("https://www.watch2gether.com/rooms/4gsijtdvlmrererx8b?lang=en")
     if message.content.endswith('-d'):
