@@ -25,8 +25,16 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('~hello'):
-        await message.channel.send('Hello!')
+    if message.content.startswith('~help'):
+        embed = discord.Embed(title="BOT Haris Commands")
+        embed.add_field(name="~lol skills CHAMPION_NAME", value="Shows the skills and cooldowns of a given champion")
+        embed.add_field(name="~lol level SUMMONER_NAME", value="Shows a summoners icon, level and rank")
+        embed.add_field(name="~lol mastery SUMMONER_NAME", value="Shows all mastery 7 champions")
+        embed.add_field(name="~lol nicelife SUMMONER_NAME", value="Shows how much league of legends was played in the last 24h")
+        embed.add_field(name="~lol livegame SUMMONER_NAME", value="LOL XD")
+        embed.add_field(name="~react WORD", value="Attempts to add the word as a reaction to the above message")
+        embed.add_field(name="~spotify SEARCH_QUERY", value="Searches spotify for a song")
+        await message.channel.send(embed=embed)
     elif message.content.startswith('~lol'):
         xs = message.content.split(' ')
         if len(xs) < 2:
