@@ -14,7 +14,7 @@ spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
 cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
-#champs = cassiopeia.get_champions()
+champs = cassiopeia.get_champions()
 
 @client.event
 async def on_ready():
@@ -107,9 +107,28 @@ async def on_message(message):
             secs, mins = secs%60, secs//60
             mins, hours = mins%60, mins//60
             await message.channel.send(f'{name} did work for {int(hours)} hours, {int(mins)} minutes and {int(secs)} seconds yesterday')
-        elif (xs[1] == "livegame"):
+        elif (xs[1] == "mmr"):
             summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
+            total, count = 0, 45
+            mapper = {'IRON': 0, 'BRONZE': 4,
+                      'SILVER' : 8, 'GOLD' : 12,
+                      'PLATINUM' : 16, 'DIAMOND' : 20,
+                      'MASTER' : 24, 'GRANDMASTER' : 28,
+                      'CHALLENGER': 32, 'IV' : 0, 'III':1,'II':2,'I':3}
+            for match in summoner.match_history(seasons=[cassiopeia.Season.season_9],queues=[cassiopeia.Queue.ranked_solo_fives],begin_index=0,end_index=5):
+                for p in match.participants:
+                    rsf = cassiopeia.Queue.ranked_solo_fives
+                    psr = p.summoner.ranks
+                    if rsf in psr:
+                        total += mapper[psr[rsf].tier.value] + mapper[psr[rsf].division.value]
+                    else:
+                        count-=1
             name = cassiopeia.get_summoner(account_id=summoner.account_id).name
+            other = ['Iron', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master', 'Grandmaster', 'Challenger']
+            other2 = ['IV','III','II','I']
+            print(total, count)
+            rank = other[round(total/count)//4] + " " + other2[round(total/count)%4] 
+            await message.channel.send(f'{name} played in an average of {rank} in their past 5 games')
     elif message.content.startswith('~react'):
         emojis = client.emojis
         eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
