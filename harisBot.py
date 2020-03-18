@@ -6,6 +6,7 @@ import spotipy
 import re
 import datetime
 import arrow
+import random
 from apikeys import *
 
 client = discord.Client()
@@ -14,7 +15,7 @@ spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
 cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
-champs = cassiopeia.get_champions()
+#champs = cassiopeia.get_champions()
 
 @client.event
 async def on_ready():
@@ -31,7 +32,6 @@ async def on_message(message):
         embed.add_field(name="~lol level SUMMONER_NAME", value="Shows a summoners icon, level and rank")
         embed.add_field(name="~lol mastery SUMMONER_NAME", value="Shows all mastery 7 champions")
         embed.add_field(name="~lol nicelife SUMMONER_NAME", value="Shows how much league of legends was played in the last 24h")
-        embed.add_field(name="~lol livegame SUMMONER_NAME", value="LOL XD")
         embed.add_field(name="~react WORD", value="Attempts to add the word as a reaction to the above message")
         embed.add_field(name="~spotify SEARCH_QUERY", value="Searches spotify for a song")
         await message.channel.send(embed=embed)
@@ -107,7 +107,7 @@ async def on_message(message):
             secs, mins = secs%60, secs//60
             mins, hours = mins%60, mins//60
             await message.channel.send(f'{name} did work for {int(hours)} hours, {int(mins)} minutes and {int(secs)} seconds yesterday')
-        elif (xs[1] == "mmr"):
+        """ elif (xs[1] == "mmr"):
             summoner = cassiopeia.get_summoner(name=' '.join(xs[2:]))
             total, count = 0, 45
             mapper = {'IRON': 0, 'BRONZE': 4,
@@ -128,7 +128,7 @@ async def on_message(message):
             other2 = ['IV','III','II','I']
             print(total, count)
             rank = other[round(total/count)//4] + " " + other2[round(total/count)%4] 
-            await message.channel.send(f'{name} played in an average of {rank} in their past 5 games')
+            await message.channel.send(f'{name} played in an average of {rank} in their past 5 games')"""  
     elif message.content.startswith('~react'):
         emojis = client.emojis
         eDict = {'A' : '🇦', 'B' : '🇧', 'C' : '🇨', 'D' : '🇩', 'E' : '🇪', 
@@ -150,11 +150,12 @@ async def on_message(message):
         results = (spotify.search(q=xs[9:], limit=1, type="track"))
         for idx, track in enumerate(results['tracks']['items']):
             await message.channel.send(track['external_urls']['spotify'])
-    
-
+    elif message.content.startswith('~coinflip'):
+        await message.channel.send("Heads" if random.randint(0,1) else "Tails")
+    elif message.content.startswith('~rand'):
+        xs =  message.content.split(' ')[1:]
+        await message.channel.send(xs[random.randint(0,len(xs)-1)])
     elif message.content.startswith('~w2g'):
         await message.channel.send("https://www.watch2gether.com/rooms/4gsijtdvlmrererx8b?lang=en")
-    if message.content.endswith('-d'):
-        await message.delete()
 
 client.run(TOKEN)
