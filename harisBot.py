@@ -15,7 +15,7 @@ spotify = spotipy.Spotify(client_credentials_manager=auth)
 location = "https://na1.api.riotgames.com/" #change this for other regions
 cassiopeia.set_riot_api_key(RIOT_APIKEY)
 cassiopeia.set_default_region("NA")
-#champs = cassiopeia.get_champions()
+champs = cassiopeia.get_champions()
 
 @client.event
 async def on_ready():
