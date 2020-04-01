@@ -155,6 +155,9 @@ async def on_message(message):
 
     elif message.content.startswith('~rand'):
         xs =  message.content.split(' ')[1:]
+        if len(xs) == 1:
+            try:
+                await message.channel.send(random.randint(0,int(xs[0])))
         await message.channel.send(xs[random.randint(0,len(xs)-1)])
 
     elif message.content.startswith('~w2g'):
