@@ -21,7 +21,7 @@ packaging==20.0
 pep8==1.7.1
 Pillow==7.0.0
 pluggy==0.13.1
-py==1.8.1
+py==1.10.0
 pycodestyle==2.5.0
 pyparsing==2.4.6
 pytest==5.3.4
