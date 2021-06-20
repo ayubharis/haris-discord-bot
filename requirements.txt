@@ -29,7 +29,7 @@ python-dateutil==2.8.1
 requests==2.22.0
 six==1.14.0
 spotipy==2.7.1
-urllib3==1.25.3
+urllib3==1.26.5
 wcwidth==0.1.8
 websockets==9.1
 yarl==1.4.2
